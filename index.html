@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignación de Asientos - Graduación</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-option1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-option2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn.active {
+            transform: scale(1.05);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .informatica { background-color: #7dd3fc; }
+        .sistemas { background-color: #fde047; }
+        .redes { background-color: #86efac; }
+
+        .auditorium {
+            position: relative;
+            margin: 30px auto;
+            max-width: 1200px;
+        }
+
+        .stage {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 1.3em;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .seating-area {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .side {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .side-label {
+            text-align: center;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            padding: 8px;
+            background: #edf2f7;
+            border-radius: 8px;
+        }
+
+        .runway {
+            width: 60px;
+            background: repeating-linear-gradient(
+                45deg,
+                #cbd5e0,
+                #cbd5e0 10px,
+                #e2e8f0 10px,
+                #e2e8f0 20px
+            );
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .runway-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 1.2em;
+            letter-spacing: 3px;
+        }
+
+        .seats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .seat-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .seat {
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            border: 2px solid rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .seat:hover {
+            transform: scale(1.1);
+            border-color: #2d3748;
+            z-index: 10;
+        }
+
+        .seat:hover::after {
+            content: attr(data-info);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            font-size: 12px;
+            margin-bottom: 5px;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .option-title {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .seating-area {
+                flex-direction: column;
+            }
+            
+            .runway {
+                width: 100%;
+                height: 40px;
+            }
+            
+            .runway-text {
+                writing-mode: horizontal-tb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Asignación de Asientos - Opciones</h1>
+        <p class="subtitle">Organización de familiares.(No es final desconozco cuantos asientos entran por fila)</p>
+        <div class="controls">
+            <button class="btn btn-option1 active" onclick="showOption(1)">
+                Opción 1: Orden Alfabético 
+            </button>
+            <button class="btn btn-option2" onclick="showOption(2)">
+                Opción 2: Agrupado por Carrera
+            </button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color informatica"></div>
+                <span><strong>Informática</strong> (103 sillas)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color sistemas"></div>
+                <span><strong>Sistemas</strong> (301 sillas)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color redes"></div>
+                <span><strong>Redes</strong> (207 sillas)</span>
+            </div>
+        </div>
+
+        <div id="option1" class="auditorium">
+            <div class="option-title">Opción 1: Orden Alfabético (Carreras Intercaladas como en el la lista del drive)</div>
+            <div class="stage">ESCENARIO </div>
+            <div class="seating-area">
+                <div class="side">
+                    <div class="side-label">LADO IZQUIERDO</div>
+                    <div class="seats-container" id="left-alpha"></div>
+                </div>
+                <div class="runway">
+                    <div class="runway-text">PASARELA</div>
+                </div>
+                <div class="side">
+                    <div class="side-label">LADO DERECHO</div>
+                    <div class="seats-container" id="right-alpha"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="option2" class="auditorium" style="display:none;">
+            <div class="option-title">Opción 2: Informática + Redes (Izq) | Sistemas (Der)</div>
+            <div class="stage">ESCENARIO</div>
+            <div class="seating-area">
+                <div class="side">
+                    <div class="side-label">LADO IZQUIERDO - INFORMÁTICA + REDES</div>
+                    <div class="seats-container" id="left-grouped"></div>
+                </div>
+                <div class="runway">
+                    <div class="runway-text">PASARELA</div>
+                </div>
+                <div class="side">
+                    <div class="side-label">LADO DERECHO - SISTEMAS</div>
+                    <div class="seats-container" id="right-grouped"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">611</div>
+                <div class="stat-label">Total de Sillas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">45</div>
+                <div class="stat-label">Graduados</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const students = [
+            {name: "Adrian Magne", carrera: "Redes", sillas: 14},
+            {name: "Alberto Iturralde", carrera: "Redes", sillas: 10},
+            {name: "Almanza Balderrama", carrera: "Sistemas", sillas: 10},
+            {name: "Antezana Espinoza", carrera: "Informatica", sillas: 20},
+            {name: "Aramayo Valeriano", carrera: "Redes", sillas: 14},
+            {name: "Arce Cuéllar", carrera: "Sistemas", sillas: 13},
+            {name: "Asturizaga Flores", carrera: "Sistemas", sillas: 10},
+            {name: "Bustamante Condori", carrera: "Redes", sillas: 10},
+            {name: "Bustamante Paraba", carrera: "Sistemas", sillas: 21},
+            {name: "Calzadilla Nogales", carrera: "Sistemas", sillas: 10},
+            {name: "Camacho Balderrama", carrera: "Sistemas", sillas: 10},
+            {name: "Castellon Mejia", carrera: "Informatica", sillas: 14},
+            {name: "Chura Aquino", carrera: "Sistemas", sillas: 12},
+            {name: "Coronado Arispe", carrera: "Informatica", sillas: 11},
+            {name: "Cuellar Serrano", carrera: "Sistemas", sillas: 10},
+            {name: "Donoso Quispe", carrera: "Redes", sillas: 12},
+            {name: "Galvarro Carrillo", carrera: "Redes", sillas: 10},
+            {name: "Guevara Gomez", carrera: "Redes", sillas: 17},
+            {name: "Lamas Soto", carrera: "Sistemas", sillas: 10},
+            {name: "Machuca Yavita", carrera: "Sistemas", sillas: 20},
+            {name: "Mamani Condori", carrera: "Redes", sillas: 10},
+            {name: "Mamani Lopez", carrera: "Sistemas", sillas: 30},
+            {name: "Marin Quelca", carrera: "Redes", sillas: 20},
+            {name: "Mattinen Valdez", carrera: "Informatica", sillas: 10},
+            {name: "Moron Alvarado", carrera: "Redes", sillas: 18},
+            {name: "Méndez Villalba", carrera: "Sistemas", sillas: 16},
+            {name: "Nacho Uria", carrera: "Redes", sillas: 10},
+            {name: "Olmos Campos", carrera: "Informatica", sillas: 10},
+            {name: "Ortuño Albornoz", carrera: "Redes", sillas: 15},
+            {name: "Padilla Yapura", carrera: "Informatica", sillas: 13},
+            {name: "Quiroga Castro", carrera: "Sistemas", sillas: 10},
+            {name: "Retamoso Rodriguez", carrera: "Sistemas", sillas: 12},
+            {name: "Rivas Romana", carrera: "Redes", sillas: 24},
+            {name: "Rojas Machuca", carrera: "Sistemas", sillas: 13},
+            {name: "Rojas Garnica", carrera: "Sistemas", sillas: 18},
+            {name: "Rojas Zambrana", carrera: "Sistemas", sillas: 14},
+            {name: "Salvatierra Rada", carrera: "Sistemas", sillas: 14},
+            {name: "Sañez Salce", carrera: "Sistemas", sillas: 16},
+            {name: "Soliz Camacho", carrera: "Redes", sillas: 10},
+            {name: "Suarez Lazarte", carrera: "Sistemas", sillas: 10},
+            {name: "Tarqui Marca", carrera: "Redes", sillas: 13},
+            {name: "Torres Rocha", carrera: "Sistemas", sillas: 12},
+            {name: "Torrez Garcia", carrera: "Sistemas", sillas: 10},
+            {name: "Vaca Fernández", carrera: "Informatica", sillas: 10},
+            {name: "Vaca Ibañez", carrera: "Informatica", sillas: 15}
+        ];
+
+        function createSeats(container, studentsList, seatsPerRow = 10) {
+            container.innerHTML = '';
+            let currentRow = [];
+            
+            studentsList.forEach(student => {
+                for (let i = 0; i < student.sillas; i++) {
+                    const seat = document.createElement('div');
+                    seat.className = `seat ${student.carrera.toLowerCase()}`;
+                    seat.setAttribute('data-info', `${student.name} (${student.carrera})`);
+                    currentRow.push(seat);
+                    
+                    if (currentRow.length === seatsPerRow) {
+                        const row = document.createElement('div');
+                        row.className = 'seat-row';
+                        currentRow.forEach(s => row.appendChild(s));
+                        container.appendChild(row);
+                        currentRow = [];
+                    }
+                }
+            });
+            
+            if (currentRow.length > 0) {
+                const row = document.createElement('div');
+                row.className = 'seat-row';
+                currentRow.forEach(s => row.appendChild(s));
+                container.appendChild(row);
+            }
+        }
+
+        function initOption1() {
+            const half = Math.ceil(students.length / 2);
+            const leftStudents = students.slice(0, half);
+            const rightStudents = students.slice(half);
+            
+            createSeats(document.getElementById('left-alpha'), leftStudents);
+            createSeats(document.getElementById('right-alpha'), rightStudents);
+        }
+
+        function initOption2() {
+            const redes = students.filter(s => s.carrera === 'Redes');
+            const informatica = students.filter(s => s.carrera === 'Informatica');
+            const sistemas = students.filter(s => s.carrera === 'Sistemas');
+            
+            createSeats(document.getElementById('left-grouped'), [...informatica, ...redes]);
+            createSeats(document.getElementById('right-grouped'), sistemas);
+        }
+
+        function showOption(num) {
+            document.getElementById('option1').style.display = num === 1 ? 'block' : 'none';
+            document.getElementById('option2').style.display = num === 2 ? 'block' : 'none';
+            
+            document.querySelectorAll('.btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        initOption1();
+        initOption2();
+    </script>
+</body>
+</html>
