@@ -256,28 +256,195 @@
         }
 
         @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .subtitle {
+                font-size: 0.9em;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .legend {
+                gap: 15px;
+            }
+
+            .legend-item {
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+
+            .legend-color {
+                width: 25px;
+                height: 25px;
+            }
+
+            .option-title {
+                font-size: 1em;
+                padding: 10px;
+            }
+
+            .stage {
+                font-size: 1em;
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+
             .seating-area {
-                flex-direction: column;
+                gap: 15px;
+            }
+
+            .side {
+                max-width: 45%;
+            }
+
+            .side-label {
+                font-size: 0.7em;
+                padding: 6px;
+                margin-bottom: 10px;
             }
             
             .runway {
-                width: 100%;
-                height: 40px;
+                width: 30px;
+                min-width: 30px;
             }
             
             .runway-text {
-                writing-mode: horizontal-tb;
+                font-size: 0.7em;
+                letter-spacing: 1px;
+            }
+
+            .seat {
+                width: 16px;
+                height: 16px;
+                border-width: 1px;
+            }
+
+            .seat:hover::after {
+                font-size: 9px;
+                padding: 4px 8px;
+            }
+
+            .seats-container {
+                gap: 4px;
+            }
+
+            .seat-row {
+                gap: 3px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-number {
+                font-size: 1.5em;
+            }
+
+            .stat-label {
+                font-size: 0.85em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .subtitle {
+                font-size: 0.8em;
+            }
+
+            .btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .option-title {
+                font-size: 0.85em;
+                padding: 8px;
+            }
+
+            .stage {
+                font-size: 0.9em;
+                padding: 10px;
+            }
+
+            .side-label {
+                font-size: 0.6em;
+                padding: 5px;
+            }
+
+            .runway {
+                width: 25px;
+                min-width: 25px;
+            }
+
+            .runway-text {
+                font-size: 0.6em;
+            }
+
+            .seat {
+                width: 12px;
+                height: 12px;
+            }
+
+            .seat-row {
+                gap: 2px;
+            }
+
+            .seats-container {
+                gap: 3px;
+            }
+
+            .seating-area {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .seat {
+                width: 10px;
+                height: 10px;
+            }
+
+            .runway {
+                width: 20px;
+                min-width: 20px;
+            }
+
+            .runway-text {
+                font-size: 0.55em;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Asignación de Asientos - Opciones</h1>
-        <p class="subtitle">Organización de familiares.(No es final desconozco cuantos asientos entran por fila)</p>
+        <h1>🎓 Asignación de Asientos - Opciones</h1>
+        <p class="subtitle">Organización de familiares (Solo es para darnos idea, desconozco cuantos asientos entran por fila)</p>
+
         <div class="controls">
             <button class="btn btn-option1 active" onclick="showOption(1)">
-                Opción 1: Orden Alfabético 
+                Opción 1: Orden Alfabético
             </button>
             <button class="btn btn-option2" onclick="showOption(2)">
                 Opción 2: Agrupado por Carrera
@@ -300,8 +467,8 @@
         </div>
 
         <div id="option1" class="auditorium">
-            <div class="option-title">Opción 1: Orden Alfabético (Carreras Intercaladas como en el la lista del drive)</div>
-            <div class="stage">ESCENARIO </div>
+            <div class="option-title">Opción 1: Orden Alfabético (Carreras Intercaladas como en la lista del drive)</div>
+            <div class="stage">ESCENARIO</div>
             <div class="seating-area">
                 <div class="side">
                     <div class="side-label">LADO IZQUIERDO</div>
@@ -399,6 +566,16 @@
 
         function createSeats(container, studentsList, seatsPerRow = 10) {
             container.innerHTML = '';
+            
+            // Ajustar número de asientos por fila según el ancho de pantalla
+            if (window.innerWidth <= 360) {
+                seatsPerRow = 5;
+            } else if (window.innerWidth <= 480) {
+                seatsPerRow = 6;
+            } else if (window.innerWidth <= 768) {
+                seatsPerRow = 7;
+            }
+            
             let currentRow = [];
             
             studentsList.forEach(student => {
@@ -454,6 +631,16 @@
 
         initOption1();
         initOption2();
+
+        // Redibujar asientos cuando cambie el tamaño de la ventana
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                initOption1();
+                initOption2();
+            }, 250);
+        });
     </script>
 </body>
 </html>
